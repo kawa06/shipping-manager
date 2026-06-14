@@ -1,0 +1,146 @@
+// localStorage キー
+const STORAGE_KEY = 'shippingProducts';
+
+// 現在のフィルター
+let currentFilter = 'all';
+
+// 初期化
+document.addEventListener('DOMContentLoaded', () => {
+    renderProducts();
+    setupEventListeners();
+});
+
+// イベントリスナー設定
+function setupEventListeners() {
+    // フォーム送信
+    document.getElementById('addForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        addProduct();
+    });
+
+    // フィルターボタン
+    document.querySelectorAll('.btn-filter').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = btn.dataset.filter;
+            renderProducts();
+        });
+    });
+}
+
+// 商品取得
+function getProducts() {
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+}
+
+// 商品保存
+function saveProducts(products) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+}
+
+// 商品追加
+function addProduct() {
+    const product = {
+        id: Date.now(),
+        name: document.getElementById('productName').value,
+        store: document.getElementById('store').value,
+        buyer: document.getElementById('buyer').value,
+        price: parseInt(document.getElementById('price').value),
+        shippingMethod: document.getElementById('shippingMethod').value,
+        memo: document.getElementById('memo').value,
+        packaged: false,
+        shipped: false,
+        notified: false,
+        createdAt: new Date().toISOString()
+    };
+
+    const products = getProducts();
+    products.unshift(product);
+    saveProducts(products);
+
+    // フォームリセット
+    document.getElementById('addForm').reset();
+
+    renderProducts();
+}
+
+// 状態切り替え
+function toggleStatus(id, status) {
+    const products = getProducts();
+    const product = products.find(p => p.id === id);
+    if (product) {
+        product[status] = !product[status];
+        saveProducts(products);
+        renderProducts();
+    }
+}
+
+// 商品削除
+function deleteProduct(id) {
+    if (!confirm('この商品を削除しますか？')) return;
+    const products = getProducts().filter(p => p.id !== id);
+    saveProducts(products);
+    renderProducts();
+}
+
+// フィルター適用
+function filterProducts(products) {
+    switch (currentFilter) {
+        case 'unpackaged':
+            return products.filter(p => !p.packaged);
+        case 'unshipped':
+            return products.filter(p => !p.shipped);
+        case 'unnotified':
+            return products.filter(p => !p.notified);
+        default:
+            return products;
+    }
+}
+
+// レンダリング
+function renderProducts() {
+    const container = document.getElementById('productList');
+    const products = filterProducts(getProducts());
+
+    if (products.length === 0) {
+        container.innerHTML = '<div class="empty-state">商品がありません</div>';
+        return;
+    }
+
+    container.innerHTML = products.map(product => `
+        <div class="product-card">
+            <div class="product-header">
+                <div class="product-name">${escapeHtml(product.name)}</div>
+                <div class="product-price">¥${product.price.toLocaleString()}</div>
+            </div>
+            <div class="product-info">販売先: ${escapeHtml(product.store)}</div>
+            <div class="product-info">購入者: ${escapeHtml(product.buyer)}</div>
+            <div class="product-info">発送方法: ${escapeHtml(product.shippingMethod)}</div>
+            ${product.memo ? `<div class="product-memo">${escapeHtml(product.memo)}</div>` : ''}
+            <div class="status-buttons">
+                <button class="status-btn ${product.packaged ? 'done' : 'undone'}" 
+                    onclick="toggleStatus(${product.id}, 'packaged')">
+                    ${product.packaged ? '✓ 梱包済み' : '未梱包'}
+                </button>
+                <button class="status-btn ${product.shipped ? 'done' : 'undone'}" 
+                    onclick="toggleStatus(${product.id}, 'shipped')">
+                    ${product.shipped ? '✓ 発送済み' : '未発送'}
+                </button>
+                <button class="status-btn ${product.notified ? 'done' : 'undone'}" 
+                    onclick="toggleStatus(${product.id}, 'notified')">
+                    ${product.notified ? '✓ 発送連絡済み' : '未連絡'}
+                </button>
+            </div>
+            <button class="delete-btn" onclick="deleteProduct(${product.id})">削除</button>
+        </div>
+    `).join('');
+}
+
+// HTMLエスケープ
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
