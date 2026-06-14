@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>発送管理</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>発送管理</h1>
+        </header>
+
+        <!-- 追加フォーム -->
+        <section class="form-section">
+            <h2>商品追加</h2>
+            <form id="addForm">
+                <div class="form-group">
+                    <label for="productName">商品名</label>
+                    <input type="text" id="productName" required>
+                </div>
+                <div class="form-group">
+                    <label for="store">販売先</label>
+                    <input type="text" id="store" required>
+                </div>
+                <div class="form-group">
+                    <label for="buyer">購入者名</label>
+                    <input type="text" id="buyer" required>
+                </div>
+                <div class="form-group">
+                    <label for="price">金額</label>
+                    <input type="number" id="price" required>
+                </div>
+                <div class="form-group">
+                    <label for="shippingMethod">発送方法</label>
+                    <input type="text" id="shippingMethod" required>
+                </div>
+                <div class="form-group">
+                    <label for="memo">メモ</label>
+                    <textarea id="memo" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn-submit">追加</button>
+            </form>
+        </section>
+
+        <!-- 絞り込み -->
+        <section class="filter-section">
+            <button class="btn-filter active" data-filter="all">全部</button>
+            <button class="btn-filter" data-filter="unpackaged">未梱包</button>
+            <button class="btn-filter" data-filter="unshipped">未発送</button>
+            <button class="btn-filter" data-filter="unnotified">未連絡</button>
+        </section>
+
+        <!-- 商品一覧 -->
+        <section class="list-section">
+            <h2>商品一覧</h2>
+            <div id="productList"></div>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
