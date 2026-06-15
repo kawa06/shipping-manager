@@ -32,12 +32,23 @@ function setupEventListeners() {
 // 商品取得
 function getProducts() {
     const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
+    if (!data) return [];
+    try {
+        return JSON.parse(data);
+    } catch (e) {
+        console.error('localStorage parse error:', e);
+        return [];
+    }
 }
 
 // 商品保存
 function saveProducts(products) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+    } catch (e) {
+        console.error('localStorage save error:', e);
+        alert('データの保存に失敗しました。ブラウザのストレージ設定を確認してください。');
+    }
 }
 
 // 商品追加
@@ -47,7 +58,7 @@ function addProduct() {
         name: document.getElementById('productName').value,
         store: document.getElementById('store').value,
         buyer: document.getElementById('buyer').value,
-        price: parseInt(document.getElementById('price').value),
+        price: parseInt(document.getElementById('price').value) || 0,
         shippingMethod: document.getElementById('shippingMethod').value,
         memo: document.getElementById('memo').value,
         packaged: false,
