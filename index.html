@@ -22,7 +22,14 @@
                 </div>
                 <div class="form-group">
                     <label for="store">販売先</label>
-                    <input type="text" id="store" required>
+                    <input type="text" id="store" list="storeList" required>
+                    <datalist id="storeList">
+                        <option value="メルカリ">
+                        <option value="ヤフオク">
+                        <option value="フリマ">
+                        <option value="スニダン">
+                        <option value="X">
+                    </datalist>
                 </div>
                 <div class="form-group">
                     <label for="buyer">購入者名</label>
@@ -34,7 +41,13 @@
                 </div>
                 <div class="form-group">
                     <label for="shippingMethod">発送方法</label>
-                    <input type="text" id="shippingMethod" required>
+                    <input type="text" id="shippingMethod" list="shippingMethodList" required>
+                    <datalist id="shippingMethodList">
+                        <option value="ネコポス">
+                        <option value="宅急便コンパクト">
+                        <option value="60サイズ">
+                        <option value="80サイズ">
+                    </datalist>
                 </div>
                 <div class="form-group">
                     <label for="memo">メモ</label>
